@@ -45,7 +45,7 @@ FROM
     GROUP BY tmp_results.competitionId
 ) AS c;
 
--- Results in female_pct_by_country.csv
+-- Results in pct_female_by_country.csv
 
 SELECT c.name AS country, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
@@ -66,7 +66,7 @@ FROM
 INNER JOIN Countries AS c ON tmp_comps.countryId = c.id
 GROUP BY country;
 
--- Results in female_pct_by_year.csv
+-- Results in pct_female_by_year.csv
 
 SELECT year, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
@@ -86,7 +86,7 @@ FROM
 ) AS tmp_comps
 GROUP BY year;
 
--- Results in female_pct_by_country_year.csv
+-- Results in pct_female_by_country_year.csv
 
 SELECT c.name AS country, year, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
