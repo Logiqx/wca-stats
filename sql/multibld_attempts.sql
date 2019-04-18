@@ -38,4 +38,5 @@ FROM
     AND best > 0
     GROUP BY attempted, solved
 ) tmp_multi
+-- WHERE attempted BETWEEN 9 AND 11
 ORDER BY attempted, solved DESC;
