@@ -32,7 +32,7 @@ FROM
         COUNT(*) AS num_persons
     FROM Results
     WHERE eventId = '333mbf'
-    AND best % 100 > -1
+    AND best > 0
     GROUP BY attempted, solved
 ) tmp_multi
 ORDER BY attempted, solved DESC;
