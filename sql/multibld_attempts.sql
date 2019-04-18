@@ -7,6 +7,7 @@
 
               Do more people get 10/11, 11/11 or 9/9?
               Do you have it as a percentage of those who have attempted 11 and 9?
+              Can you do I want a result of 7 points and can attempt up to 13 cubes?
 
     Note:     This query only considers successful attempts
               DNF results do not record how many cubes were attempted / solved
@@ -23,22 +24,31 @@
     timeInSeconds = TTTTT
 */
 
-SELECT attempted, solved, missed, points, num_persons,
-    FORMAT(100.0 * num_persons / SUM(num_persons) OVER(PARTITION BY attempted), 2) AS pct_persons,
-    FORMAT(100.0 * SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) /
-		SUM(num_persons) OVER(PARTITION BY attempted), 2) AS tot_pct_persons
-FROM 
+SET @target = 7;
+SET @max_cubes = 13;
+
+SELECT *
+FROM
 (
-    SELECT
-        99 - FLOOR(best / 10000000) + (best % 100) * 2 AS attempted,
-        99 - FLOOR(best / 10000000) + (best % 100) AS solved,
-        best % 100 AS missed,
-        99 - FLOOR(best / 10000000) AS points,
-        COUNT(*) AS num_persons
-    FROM Results
-    WHERE eventId = '333mbf'
-    AND best > 0
-    GROUP BY attempted, solved
-) tmp_multi
--- WHERE attempted BETWEEN 9 AND 11
+	SELECT attempted, solved, missed, points, num_persons,
+        SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) AS tot_num_persons,
+		FORMAT(100.0 * num_persons / SUM(num_persons) OVER(PARTITION BY attempted), 2) AS pct_persons,
+		FORMAT(100.0 * SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) /
+			SUM(num_persons) OVER(PARTITION BY attempted), 2) AS tot_pct_persons
+	FROM
+	(
+		SELECT
+			99 - FLOOR(best / 10000000) + (best % 100) * 2 AS attempted,
+			99 - FLOOR(best / 10000000) + (best % 100) AS solved,
+			best % 100 AS missed,
+			99 - FLOOR(best / 10000000) AS points,
+			COUNT(*) AS num_persons
+		FROM Results
+		WHERE eventId = '333mbf'
+		AND best > 0
+		GROUP BY attempted, solved
+	) t1
+) t2
+WHERE points BETWEEN @target AND @target + 1
+AND attempted <= @max_cubes
 ORDER BY attempted, solved DESC;
