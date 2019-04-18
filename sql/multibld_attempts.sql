@@ -31,7 +31,7 @@ SELECT *
 FROM
 (
 	SELECT attempted, solved, missed, points, num_persons,
-        SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) AS tot_num_persons,
+		SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) AS tot_num_persons,
 		FORMAT(100.0 * num_persons / SUM(num_persons) OVER(PARTITION BY attempted), 2) AS pct_persons,
 		FORMAT(100.0 * SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) /
 			SUM(num_persons) OVER(PARTITION BY attempted), 2) AS tot_pct_persons
