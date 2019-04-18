@@ -30,11 +30,11 @@ SET @max_cubes = 13;
 SELECT *
 FROM
 (
-	SELECT attempted, solved, missed, points, num_persons,
-		SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) AS tot_num_persons,
-		FORMAT(100.0 * num_persons / SUM(num_persons) OVER(PARTITION BY attempted), 2) AS pct_persons,
-		FORMAT(100.0 * SUM(num_persons) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) /
-			SUM(num_persons) OVER(PARTITION BY attempted), 2) AS tot_pct_persons
+	SELECT attempted, solved, missed, points, num_results,
+		SUM(num_results) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) AS tot_num_results,
+		FORMAT(100.0 * num_results / SUM(num_results) OVER(PARTITION BY attempted), 2) AS pct_results,
+		FORMAT(100.0 * SUM(num_results) OVER(PARTITION BY attempted ORDER BY solved DESC ROWS UNBOUNDED PRECEDING) /
+			SUM(num_results) OVER(PARTITION BY attempted), 2) AS tot_pct_results
 	FROM
 	(
 		SELECT
@@ -42,7 +42,7 @@ FROM
 			99 - FLOOR(best / 10000000) + (best % 100) AS solved,
 			best % 100 AS missed,
 			99 - FLOOR(best / 10000000) AS points,
-			COUNT(*) AS num_persons
+			COUNT(*) AS num_results
 		FROM Results
 		WHERE eventId = '333mbf'
 		AND best > 0
