@@ -7,6 +7,9 @@
 
               Do more people get 10/11, 11/11 or 9/9?
               Do you have it as a percentage of those who have attempted 11 and 9?
+
+    Note:     This query only considers successful attempts
+              DNF results do not record how many cubes were attempted / solved
 */
 
 /*
