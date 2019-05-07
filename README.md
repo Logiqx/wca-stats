@@ -11,12 +11,6 @@ The project has been split into a number of categories with each one having its 
 
 
 
-### Senior Cubers
-
-Statistics relating to [senior cubers](docs/seniors.md) - e.g. Over-40's Rankings.
-
-
-
 ### Relative Solve Times
 
 Statistics relating to [relative solve times](docs/relative_times.md) (e.g. 3x3x3 vs 4x4x4).
@@ -26,6 +20,12 @@ Statistics relating to [relative solve times](docs/relative_times.md) (e.g. 3x3x
 ### MultiBLD
 
 Statistics relating to [MultiBLD](docs/multibld.md) such as the number of cubes attempted / solved.
+
+
+
+### Senior Competitors
+
+Statistics relating to [senior cubers](docs/seniors.md) - e.g. Over-40's Rankings.
 
 
 
