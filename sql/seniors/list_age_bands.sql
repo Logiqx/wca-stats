@@ -23,4 +23,5 @@ FROM
     HAVING age_at_comp >= 20
   ) AS tmp_results
 ) AS tmp_persons
-GROUP BY age_band;
+GROUP BY age_band
+ORDER BY age_band;
