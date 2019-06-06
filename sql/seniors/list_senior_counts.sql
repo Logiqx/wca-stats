@@ -1,5 +1,5 @@
 /* 
-    Script:   Extract Over 40s Counts
+    Script:   List Over 40s Counts
     Created:  2019-06-06
     Author:   Michael George / 2015GEOR02
    
@@ -9,7 +9,7 @@
 SELECT eventId, COUNT(DISTINCT singleId) AS numSingleIds, COUNT(DISTINCT averageId) AS numAverageIds
 FROM
 (
-  SELECT r.eventId, r.personId AS singleId, IF(average > 0, personId, NULL) AS averageId,
+  SELECT eventId, personId AS singleId, IF(average > 0, personId, NULL) AS averageId,
     TIMESTAMPDIFF(YEAR,
       DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
       DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
