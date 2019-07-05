@@ -6,7 +6,12 @@
     Purpose:  Count the number of people over the age of 40 with competition results
 */
 
-SELECT eventId, COUNT(DISTINCT singleId) AS numSingleIds, COUNT(DISTINCT averageId) AS numAverageIds
+SELECT eventId, COUNT(DISTINCT singleId) AS numSingle40s, COUNT(DISTINCT averageId) AS numAverage40s,
+	COUNT(DISTINCT IF(age_at_comp >= 50, singleId, NULL)) AS numSingle50s, COUNT(DISTINCT IF(age_at_comp >= 50, averageId, NULL)) AS numAverage50s,
+	COUNT(DISTINCT IF(age_at_comp >= 60, singleId, NULL)) AS numSingle60s, COUNT(DISTINCT IF(age_at_comp >= 60, averageId, NULL)) AS numAverage60s,
+	COUNT(DISTINCT IF(age_at_comp >= 70, singleId, NULL)) AS numSingle70s, COUNT(DISTINCT IF(age_at_comp >= 70, averageId, NULL)) AS numAverage70s,
+	COUNT(DISTINCT IF(age_at_comp >= 80, singleId, NULL)) AS numSingle80s, COUNT(DISTINCT IF(age_at_comp >= 80, averageId, NULL)) AS numAverage80s,
+	COUNT(DISTINCT IF(age_at_comp >= 90, singleId, NULL)) AS numSingle90s, COUNT(DISTINCT IF(age_at_comp >= 90, averageId, NULL)) AS numAverage90s
 FROM
 (
   SELECT eventId, personId AS singleId, IF(average > 0, personId, NULL) AS averageId,
@@ -19,4 +24,4 @@ FROM
   HAVING age_at_comp >= 40
 ) AS tmp_persons
 GROUP BY eventId
-ORDER BY numSingleIds DESC, numAverageIds DESC;
+ORDER BY numSingle40s DESC;
