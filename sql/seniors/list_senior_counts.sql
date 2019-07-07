@@ -43,4 +43,5 @@ FROM
   JOIN (SELECT DISTINCT age_category FROM senior_bests_1) AS a ON a.age_category <= s.age_category
   GROUP BY eventId, personId, age_category
 ) AS senior_bests
-GROUP BY eventId, age_category;
+GROUP BY eventId, age_category
+ORDER BY eventId, age_category;
