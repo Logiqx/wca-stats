@@ -3,8 +3,10 @@
     Created:  2019-02-19
     Author:   Michael George / 2015GEOR02
    
-    Purpose:  List the number of people in each age band
+    Purpose:  List the number of people in each senior age band - 30-34, 35-39, 40-44, etc
 */
+
+SET @senior_threshold = 30;
 
 SELECT age_band, COUNT(DISTINCT personId)
 FROM
@@ -22,9 +24,9 @@ FROM
     FROM Persons AS p USE INDEX ()
     JOIN Results AS r ON r.personId = p.id AND best > 0
     JOIN Competitions AS c ON c.id = r.competitionId
-    WHERE p.year > 0 AND p.year <= YEAR(CURDATE()) - 30
+    WHERE p.year > 0 AND p.year <= YEAR(CURDATE()) - @senior_threshold
     AND p.subid = 1
-    HAVING age_at_comp >= 30
+    HAVING age_at_comp >= @senior_threshold
   ) AS tmp_results
 ) AS tmp_persons
 GROUP BY age_band
