@@ -38,7 +38,7 @@ DROP TEMPORARY TABLE IF EXISTS senior_bests_2;
 CREATE TEMPORARY TABLE senior_bests_2 AS
 SELECT personId, eventId, a.age_category, MIN(best_single) AS best_single, MIN(best_average) AS best_average
 FROM senior_bests_1 AS s
-JOIN (SELECT 40 AS age_category UNION ALL SELECT 50 UNION ALL SELECT 60 UNION ALL SELECT 70 UNION ALL SELECT 80 UNION ALL SELECT 90) AS a ON a.age_category <= s.age_category
+JOIN (SELECT 40 AS age_category UNION ALL SELECT 50 UNION ALL SELECT 60 UNION ALL SELECT 70 UNION ALL SELECT 80 UNION ALL SELECT 90 UNION ALL SELECT 100) AS a ON a.age_category <= s.age_category
 GROUP BY personId, eventId, age_category;
 
 /*
