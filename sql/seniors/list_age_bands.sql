@@ -6,10 +6,10 @@
     Purpose:  List the number of people in each senior age band - 40+, 50+, 60+, etc
 */
 
-SELECT eventId, age_category, COUNT(DISTINCT personId) AS num_persons
+SELECT eventId, age_category, COUNT(DISTINCT personId) AS num_singles, COUNT(DISTINCT IF(average > 0, personId, NULL)) AS num_averages
 FROM
 (
-  SELECT r.personId, r.eventId, TIMESTAMPDIFF(YEAR,
+  SELECT r.personId, r.eventId, r.average, TIMESTAMPDIFF(YEAR,
       DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
       DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
   FROM Persons AS p
