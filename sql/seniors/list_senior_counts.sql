@@ -16,9 +16,6 @@ FROM
       MIN(best) AS best_single, MIN(IF(average > 0, average, NULL)) AS best_average
     FROM
     (
-      -- Derived table contains senior results, including age at the start of the competition
-      -- Index hint (USE INDEX) ensures that MySQL / MariaDB uses the optimal query execution plan
-      -- i.e. Persons ("WHERE" limits to seniors) -> Results.personId -> Competitions.id
       SELECT r.personId, r.eventId, r.best, r.average,
         TIMESTAMPDIFF(YEAR,
           DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),

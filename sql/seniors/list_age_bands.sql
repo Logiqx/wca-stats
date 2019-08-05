@@ -15,9 +15,6 @@ FROM
     SELECT DISTINCT personId, eventId, FLOOR(age_at_comp / 10) * 10 AS age_category
     FROM
     (
-      -- Derived table contains senior results, including age at the start of the competition
-      -- Index hint (USE INDEX) ensures that MySQL / MariaDB uses the optimal query execution plan
-      -- i.e. Persons ("WHERE" limits to seniors) -> Results.personId -> Competitions.id
       SELECT r.personId, r.eventId,
         TIMESTAMPDIFF(YEAR,
           DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
