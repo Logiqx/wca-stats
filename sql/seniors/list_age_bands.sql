@@ -12,7 +12,7 @@ FROM
     SELECT r.personId, r.eventId, TIMESTAMPDIFF(YEAR,
         DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
         DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
-    FROM Persons AS p USE INDEX ()
+    FROM Persons AS p
     JOIN Results AS r ON r.personId = p.id AND best > 0
     JOIN Competitions AS c ON c.id = r.competitionId
     WHERE p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
