@@ -16,8 +16,7 @@ FROM
       MIN(best) AS best_single, MIN(IF(average > 0, average, NULL)) AS best_average
     FROM
     (
-      SELECT r.personId, r.eventId, r.best, r.average,
-        TIMESTAMPDIFF(YEAR,
+      SELECT r.personId, r.eventId, r.best, r.average, TIMESTAMPDIFF(YEAR,
           DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
           DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
       FROM Persons AS p USE INDEX ()

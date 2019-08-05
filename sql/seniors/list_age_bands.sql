@@ -15,8 +15,7 @@ FROM
     SELECT DISTINCT personId, eventId, FLOOR(age_at_comp / 10) * 10 AS age_category
     FROM
     (
-      SELECT r.personId, r.eventId,
-        TIMESTAMPDIFF(YEAR,
+      SELECT r.personId, r.eventId, TIMESTAMPDIFF(YEAR,
           DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
           DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
       FROM Persons AS p USE INDEX ()
