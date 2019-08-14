@@ -10,15 +10,15 @@
 */
 
 SELECT CONCAT(e.name, ' - ', t.rank, ' - ', p.name, ' - ', rankSingle, '/', rankAverage, ' (',
-	IF(e.id != '333fm', ROUND(bestSingle / 100, 2), bestSingle), ' single, ', ROUND(bestAverage / 100, 2), ' average)') AS result
+    IF(e.id != '333fm', ROUND(bestSingle / 100, 2), bestSingle), ' single, ', ROUND(bestAverage / 100, 2), ' average)') AS result
 FROM
 (
-	SELECT s.personId, s.eventId,
-		s.worldRank AS rankSingle, a.worldRank AS rankAverage,
+    SELECT s.personId, s.eventId,
+        s.worldRank AS rankSingle, a.worldRank AS rankAverage,
         s.best AS bestSingle, a.best AS bestAverage,
-		RANK() OVER (PARTITION BY eventId ORDER BY s.worldRank / a.worldRank DESC) AS rank
-	FROM RanksSingle AS s
-	JOIN RanksAverage AS a ON a.personId = s.personId AND a.eventId = s.eventId
+        RANK() OVER (PARTITION BY eventId ORDER BY s.worldRank / a.worldRank DESC) AS rank
+    FROM RanksSingle AS s
+    JOIN RanksAverage AS a ON a.personId = s.personId AND a.eventId = s.eventId
 ) AS t
 JOIN Events AS e ON e.id = t.eventId
 JOIN Persons AS p ON p.id = t.personId

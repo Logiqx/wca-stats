@@ -30,10 +30,10 @@ JOIN Events AS e ON e.id = c1.eventId
 JOIN Persons AS p ON p.id = c1.personId
 WHERE NOT EXISTS
 (
-	SELECT 1
+    SELECT 1
     FROM RanksCombined AS c2
     WHERE c2.eventId = c1.eventId
- 	AND c2.pr_single <= c1.pr_single
+    AND c2.pr_single <= c1.pr_single
     AND c2.pr_average > c1.pr_average
 )
 ORDER BY eventId, pr_single;
@@ -48,11 +48,11 @@ JOIN Events AS e ON e.id = c1.eventId
 JOIN Persons AS p ON p.id = c1.personId
 WHERE NOT EXISTS
 (
-	SELECT 1
+    SELECT 1
     FROM RanksCombined AS c2
     WHERE c2.eventId = c1.eventId
     AND c2.pr_average <= c1.pr_average
- 	AND c2.pr_single > c1.pr_single
+    AND c2.pr_single > c1.pr_single
 )
 ORDER BY eventId, pr_single;
 
@@ -62,7 +62,7 @@ ORDER BY eventId, pr_single;
 
 WITH cte AS
 (
-	SELECT s.eventId, s.personId, s.best AS pr_single, a.best AS pr_average
+    SELECT s.eventId, s.personId, s.best AS pr_single, a.best AS pr_average
     FROM RanksSingle AS s
     JOIN RanksAverage AS a ON a.eventId = s.eventId AND a.personId = s.personId
 )
@@ -70,10 +70,10 @@ SELECT eventId, personId, IF(eventId != '333fm', ROUND(pr_single / 100, 2), pr_s
 FROM cte AS c1
 WHERE NOT EXISTS
 (
-	SELECT 1
+    SELECT 1
     FROM cte AS c2
     WHERE c2.eventId = c1.eventId
-	AND c2.pr_single <= c1.pr_single
+    AND c2.pr_single <= c1.pr_single
     AND c2.pr_average > c1.pr_average
 )
 ORDER BY eventId, pr_single;
