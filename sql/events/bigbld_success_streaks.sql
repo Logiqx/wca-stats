@@ -10,7 +10,7 @@
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
-SELECT e.name AS event, t.rank, p.id, p.name, c.name as country, longestStreak
+SELECT e.name AS event, t.rank, p.id, p.name, c.name AS country, longestStreak
 FROM
 (
     SELECT eventId, personId, MAX(streakLen) AS longestStreak, RANK() OVER (PARTITION BY eventId ORDER BY MAX(streakLen) DESC) AS rank
