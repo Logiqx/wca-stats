@@ -45,4 +45,4 @@ JOIN Events AS e ON e.id = t.eventId
 JOIN Persons AS p ON p.id = t.personId AND p.subid = 1
 JOIN Countries AS c ON c.id = p.countryId
 WHERE t.rank <= 20
-ORDER BY e.rank, t.rank, t.personId;
+ORDER BY e.rank, t.rank, p.id;
