@@ -8,7 +8,7 @@
     Link:     https://www.facebook.com/groups/439995439706174/permalink/884593238579723/
 */
 
-SELECT eventId, rank, p.id, p.name, c.name as country, longestStreak
+SELECT e.name AS event, t.rank, p.id, p.name, c.name as country, longestStreak
 FROM
 (
 	SELECT eventId, personId, MAX(streakLen) AS longestStreak, RANK() OVER (PARTITION BY eventId ORDER BY MAX(streakLen) DESC) AS rank
@@ -39,7 +39,8 @@ FROM
 	) AS t
 	GROUP BY eventId, personId
 ) AS t
+JOIN Events AS e ON e.id = t.eventId
 JOIN Persons AS p ON p.id = t.personId AND p.subid = 1
 JOIN Countries AS c ON c.id = p.countryId
-WHERE rank <= 20
-ORDER BY eventId, rank;
+WHERE t.rank <= 20
+ORDER BY e.rank, t.rank, t.personId;
