@@ -6,6 +6,8 @@
     Purpose:  Does anyone have code to find the list of people with longest 4BLD success streaks? Streaks need not still be ongoing.
               Top 10-20 people with streak length would be nice, but a histogram of streak length and number of people would also work.
     Link:     https://www.facebook.com/groups/439995439706174/permalink/884593238579723/
+
+    Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
 SELECT e.name AS event, t.rank, p.id, p.name, c.name as country, longestStreak

@@ -9,7 +9,8 @@
               Do you have it as a percentage of those who have attempted 11 and 9?
               Can you do I want a result of 7 points and can attempt up to 13 cubes?
 
-    Note:     This query only considers successful attempts
+    Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
+              This query only considers successful attempts
               DNF results do not record how many cubes were attempted / solved
 */
 

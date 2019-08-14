@@ -5,6 +5,8 @@
 
     Purpose:  highest 10 values of someones single rank / their average rank
     Link:     https://www.facebook.com/groups/439995439706174/permalink/882804448758602/
+
+    Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
 SELECT CONCAT(e.name, ' - ', t.rank, ' - ', p.name, ' - ', rankSingle, '/', rankAverage, ' (',

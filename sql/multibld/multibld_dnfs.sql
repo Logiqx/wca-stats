@@ -4,6 +4,8 @@
     Author:   Michael George / 2015GEOR02
    
     Purpose:  Estimate number of cubes attempted in MultBLD DNFs
+
+    Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
 /*

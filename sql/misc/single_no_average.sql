@@ -5,6 +5,8 @@
 
     Purpose:  Fastest single without average/mean (for every event)
     Link:     https://www.facebook.com/groups/439995439706174/permalink/881784605527253/
+
+    Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
 SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(e.id != '333fm', ROUND(t.best / 100, 2), t.best)) AS result
