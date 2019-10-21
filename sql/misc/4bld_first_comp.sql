@@ -7,7 +7,7 @@
     Link:     https://www.facebook.com/groups/439995439706174/permalink/935796790126034/
 */
 
-SELECT p.id, p.name, p.countryId, compName, compDate, round, pos
+SELECT p.id, p.name, p.countryId, compName, compDate, round, pos, best
 FROM
 (
     SELECT personId, MIN(DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS firstComp
@@ -16,7 +16,7 @@ FROM
     GROUP BY personId
 ) AS t1
 JOIN (
-    SELECT personId, c.name AS compName, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') AS compDate, rt.name AS round, pos
+    SELECT personId, c.name AS compName, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') AS compDate, rt.name AS round, pos, SEC_TO_TIME(best / 100) AS best
     FROM Results AS r
     JOIN Competitions AS c ON c.id = r.competitionId
     JOIN RoundTypes AS rt ON rt.id = r.roundTypeId
