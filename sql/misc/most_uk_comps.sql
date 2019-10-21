@@ -10,11 +10,11 @@
 SELECT RANK() OVER (ORDER BY numComps DESC) AS pos, id, CONCAT(name, ' (', countryId, ')'), numComps
 FROM
 (
-  SELECT p.id, p.name, p.countryId, COUNT(DISTINCT r.competitionId) AS numComps
-  FROM Persons AS p
-  JOIN Results AS r ON r.personId = p.id
-  JOIN Competitions AS c ON c.id = r.competitionId AND c.countryId = 'United Kingdom'
-  GROUP BY p.id
+    SELECT p.id, p.name, p.countryId, COUNT(DISTINCT r.competitionId) AS numComps
+    FROM Persons AS p
+    JOIN Results AS r ON r.personId = p.id
+    JOIN Competitions AS c ON c.id = r.competitionId AND c.countryId = 'United Kingdom'
+    GROUP BY p.id
 ) AS t
 ORDER BY pos;
 
@@ -22,10 +22,10 @@ ORDER BY pos;
 SELECT RANK() OVER (ORDER BY numComps DESC) AS pos, id, CONCAT(name, ' (', countryId, ')'), numComps
 FROM
 (
-  SELECT p.id, p.name, p.countryId, COUNT(DISTINCT r.competitionId) AS numComps
-  FROM Persons AS p
-  JOIN Results AS r ON r.personId = p.id
-  WHERE p.countryId = 'United Kingdom'
-  GROUP BY p.id
+    SELECT p.id, p.name, p.countryId, COUNT(DISTINCT r.competitionId) AS numComps
+    FROM Persons AS p
+    JOIN Results AS r ON r.personId = p.id
+    WHERE p.countryId = 'United Kingdom'
+    GROUP BY p.id
 ) AS t
 ORDER BY pos;
