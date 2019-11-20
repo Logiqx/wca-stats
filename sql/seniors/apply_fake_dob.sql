@@ -27,11 +27,6 @@ SET year = FLOOR(
     month = FLOOR(1 + RAND() * 12),
     day = FLOOR(1 + RAND() * 28);
 
--- Check years
-SELECT year, COUNT(*)
-FROM Persons
-GROUP BY year;
-
 -- Check age categories
 SELECT FLOOR((YEAR(NOW()) - year) / 10) * 10 AS age_category, COUNT(*)
 FROM Persons
