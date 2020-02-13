@@ -73,15 +73,15 @@ JOIN Countries AS c2 ON c2.id = c1.countryId
 WHERE NOT EXISTS
 (
 	SELECT 1
-    FROM Winners AS w2
+	FROM Winners AS w2
 	WHERE w2.endDate <= w1.endDate
-    AND w2.best < w1.best
+	AND w2.best < w1.best
 )
 AND NOT EXISTS
 (
 	SELECT 1
-    FROM Losers AS l
+	FROM Losers AS l
 	WHERE l.personId = w1.personId
-    AND l.endDate <= w1.endDate
+	AND l.endDate <= w1.endDate
 )
 ORDER BY endDate;
