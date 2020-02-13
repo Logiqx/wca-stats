@@ -57,8 +57,8 @@ DROP TEMPORARY TABLE IF EXISTS EventComparisons;
 
 CREATE TEMPORARY TABLE EventComparisons
 (
-	`eventId` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL,
-	`baseId` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL
+    `eventId` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `baseId` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL
 );
 
 INSERT INTO EventComparisons VALUES
