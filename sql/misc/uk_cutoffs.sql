@@ -60,7 +60,7 @@ JOIN wca_dev.Events AS e ON e.id = c.eventId
 ORDER BY ratioWr DESC, e.rank;
 
 /*
-    Compare cutoffs to top 5% of the WCA
+    Compare cutoffs to top 5% of the WCA averages (excludes people with just a single)
 */
 
 SELECT year, e.name AS eventName, RIGHT(LEFT(sec_to_time(csecs / 100), 8), 5) AS cutoff,
