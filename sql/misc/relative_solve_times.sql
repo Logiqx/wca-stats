@@ -78,5 +78,5 @@ FROM EventComparisons AS ec
 JOIN Events AS e ON e.id = ec.eventId
 JOIN RanksCombinedExtra AS rce ON rce.eventId = ec.eventId
 JOIN RanksCombined AS rc ON rc.eventId = ec.baseId AND rc.personId = rce.personId
-GROUP BY e.id, vigintile
-ORDER BY e.rank, rce.vigintile;
+GROUP BY e.id, centile
+ORDER BY e.rank, centile;
