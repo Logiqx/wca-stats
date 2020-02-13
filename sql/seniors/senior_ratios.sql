@@ -4,7 +4,7 @@
     Author:   Michael George / 2015GEOR02
 
     Purpose:  Compare the top 5% of seniors against the top 5% of the WCA
-    Link:     https://www.facebook.com/groups/439995439706174/permalink/881784605527253/
+    Link:     https://www.facebook.com/groups/1604105099735401/permalink/2141271242685448/
 
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
