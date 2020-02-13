@@ -145,7 +145,7 @@ SELECT e.name AS eventName,
         ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8)
     END AS wcaResult,
     ROUND(sr / wr, 2) AS ratio
-FROM wca_dev.Events AS e
+FROM wca.Events AS e
 JOIN
 (
     SELECT eventId, vigintile, MAX(best) AS sr
@@ -186,7 +186,7 @@ SELECT e.name AS eventName, t1.vigintile * 5 AS vigintile,
         ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8)
     END AS wcaResult,
     ROUND(sr / wr, 2) AS ratio
-FROM wca_dev.Events AS e
+FROM wca.Events AS e
 JOIN
 (
     SELECT eventId, vigintile, MAX(best) AS sr
