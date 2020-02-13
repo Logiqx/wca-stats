@@ -134,14 +134,16 @@ ALTER TABLE WcaRanksCombined ADD INDEX (eventId);
 */
 
 SELECT e.name AS eventName,
-    (CASE
+    CASE
         WHEN e.id = '333fm' THEN ROUND(sr / 100, 2)
         WHEN e.id = '333mbf' THEN 99 - sr
-        ELSE RIGHT(LEFT(sec_to_time(sr / 100), 11), 8) END) AS seniorResult,
-    (CASE
+        ELSE RIGHT(LEFT(sec_to_time(sr / 100), 11), 8)
+    END AS seniorResult,
+    CASE
         WHEN e.id = '333fm' THEN ROUND(wr / 100, 2)
         WHEN e.id = '333mbf' THEN 99 - wr
-        ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8) END) AS wcaResult,
+        ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8)
+    END AS wcaResult,
     ROUND(sr / wr, 2) AS ratio
 FROM wca_dev.Events AS e
 JOIN
@@ -173,14 +175,16 @@ ORDER BY ratio, e.rank;
 */
 
 SELECT e.name AS eventName, t1.vigintile * 5 AS vigintile,
-    (CASE
+    CASE
         WHEN e.id = '333fm' THEN ROUND(sr / 100, 2)
         WHEN e.id = '333mbf' THEN 99 - sr
-        ELSE RIGHT(LEFT(sec_to_time(sr / 100), 11), 8) END) AS seniorResult,
-    (CASE
+        ELSE RIGHT(LEFT(sec_to_time(sr / 100), 11), 8)
+    END AS seniorResult,
+    CASE
         WHEN e.id = '333fm' THEN ROUND(wr / 100, 2)
         WHEN e.id = '333mbf' THEN 99 - wr
-        ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8) END) AS wcaResult,
+        ELSE RIGHT(LEFT(sec_to_time(wr / 100), 11), 8)
+    END AS wcaResult,
     ROUND(sr / wr, 2) AS ratio
 FROM wca_dev.Events AS e
 JOIN
