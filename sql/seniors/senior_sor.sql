@@ -63,7 +63,7 @@ CREATE TEMPORARY TABLE SeniorRanksCombined AS
     WHERE ageCategory = '40'
     AND resultType = 'average'
     AND eventId NOT IN ('333fm', '333bf', '444bf', '555bf', '333mbf') -- use singles
-    AND eventId NOT IN ('333ft', 'magic', 'mmagic') -- legacy event
+    AND eventId NOT IN ('333ft', 'magic', 'mmagic') -- legacy events
 )
 UNION ALL
 (
