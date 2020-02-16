@@ -17,33 +17,29 @@
 DROP TEMPORARY TABLE IF EXISTS SeniorRanks;
 
 CREATE TEMPORARY TABLE SeniorRanks AS
-SELECT eventId, resultType, ageCategory, personId, best
+SELECT eventId, resultType, seq AS ageCategory, personId, MIN(best) AS best
 FROM
 (
-    SELECT eventId, resultType, seq AS ageCategory, personId, MIN(best) AS best
-    FROM
-    (
-        SELECT r.eventId, 'average' AS resultType, r.personId, r.average AS best,
-            TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
-        FROM Seniors AS p
-        JOIN wca.Results AS r ON r.personId = p.personId AND average > 0
-        JOIN wca.Competitions AS c ON c.id = r.competitionId
-        WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
-        AND hidden = 'n'
-        HAVING age_at_comp >= 40
-        UNION ALL
-        SELECT r.eventId, 'single' AS resultType, r.personId, r.best,
-            TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
-        FROM Seniors AS p
-        JOIN wca.Results AS r ON r.personId = p.personId AND best > 0
-        JOIN wca.Competitions AS c ON c.id = r.competitionId
-        WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
-        AND hidden = 'n'
-        HAVING age_at_comp >= 40
-    ) AS t
-    JOIN seq_40_to_100_step_10 ON seq <= age_at_comp
-    GROUP BY eventId, resultType, ageCategory, personId
-) AS t;
+    SELECT r.eventId, 'average' AS resultType, r.personId, r.average AS best,
+        TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
+    FROM Seniors AS p
+    JOIN wca.Results AS r ON r.personId = p.personId AND average > 0
+    JOIN wca.Competitions AS c ON c.id = r.competitionId
+    WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
+    AND hidden = 'n'
+    HAVING age_at_comp >= 40
+    UNION ALL
+    SELECT r.eventId, 'single' AS resultType, r.personId, r.best,
+        TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
+    FROM Seniors AS p
+    JOIN wca.Results AS r ON r.personId = p.personId AND best > 0
+    JOIN wca.Competitions AS c ON c.id = r.competitionId
+    WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
+    AND hidden = 'n'
+    HAVING age_at_comp >= 40
+) AS t
+JOIN seq_40_to_100_step_10 ON seq <= age_at_comp
+GROUP BY eventId, resultType, ageCategory, personId;
 
 ALTER TABLE SeniorRanks ADD INDEX SeniorRanks(eventId, ageCategory, personId);
 
