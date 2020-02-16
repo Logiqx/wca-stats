@@ -83,7 +83,7 @@ ALTER TABLE SeniorRanksCombined ADD INDEX (eventId);
 DROP TEMPORARY TABLE IF EXISTS MaxRanks;
 
 CREATE TEMPORARY TABLE MaxRanks AS
-SELECT eventId, MAX(rankNo) AS maxRank
+SELECT eventId, MAX(rankNo) AS maxRank, COUNT(*) AS numPersons
 FROM SeniorRanksCombined
 GROUP BY eventId;
 
@@ -95,7 +95,7 @@ SELECT @sumRanks := SUM(maxRank) FROM MaxRanks;
     The calculations
 */
 
-SELECT personId, SUM((maxRank + 1 - rankNo) * (10000 / @sumRanks)) / 1000 AS score
+SELECT personId, SUM((maxRank + 1 - rankNo) / @sumRanks * 10) AS score
 FROM SeniorRanksCombined AS sr
 JOIN MaxRanks AS mr ON mr.eventId = sr.eventId
 GROUP BY personId
