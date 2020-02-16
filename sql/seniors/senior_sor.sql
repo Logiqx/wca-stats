@@ -95,8 +95,12 @@ SELECT @sumRanks := SUM(maxRank) FROM MaxRanks;
     The calculations
 */
 
-SELECT personId, SUM((maxRank + 1 - rankNo) / @sumRanks * 10) AS score
-FROM SeniorRanksCombined AS sr
-JOIN MaxRanks AS mr ON mr.eventId = sr.eventId
-GROUP BY personId
-ORDER BY score DESC;
+SELECT RANK() OVER (ORDER BY score DESC) as rankNo, t.*
+FROM
+(
+	SELECT personId, SUM((maxRank + 1 - rankNo) / @sumRanks * 10) AS score
+	FROM SeniorRanksCombined AS sr
+	JOIN MaxRanks AS mr ON mr.eventId = sr.eventId
+	GROUP BY personId
+) AS t
+ORDER BY rankNo;
