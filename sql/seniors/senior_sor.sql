@@ -17,12 +17,11 @@
 DROP TEMPORARY TABLE IF EXISTS SeniorRanks;
 
 CREATE TEMPORARY TABLE SeniorRanks AS
-SELECT eventId, resultType, ageCategory, personId, best, RANK() OVER (PARTITION BY eventId, resultType, ageCategory ORDER BY best) AS rankNo
+SELECT eventId, resultType, ageCategory, personId, best
 FROM
 (
     -- Additional brackets added for clarity
     (
-        -- Actual results
         SELECT eventId, resultType, seq AS ageCategory, personId, MIN(best) AS best
         FROM
         (
@@ -63,16 +62,12 @@ CREATE TEMPORARY TABLE SeniorRanksCombined AS
     FROM SeniorRanks AS sr1
     WHERE ageCategory = '40'
     AND resultType = 'average'
-    AND eventId NOT IN ('333ft', 'magic', 'mmagic', '333fm', '333bf', '444bf', '555bf')
+    AND eventId NOT IN ('333fm', '333bf', '444bf', '555bf', '333mbf') -- use singles
+    AND eventId NOT IN ('333ft', 'magic', 'mmagic') -- legacy event
 )
 UNION ALL
 (
-    SELECT personId, eventId, RANK() OVER (PARTITION BY eventId ORDER BY best) AS rankNo,
-        CASE 
-            WHEN eventId = '333fm' THEN best * 100
-            WHEN eventId = '333mbf' THEN FLOOR(best / 10000000)
-            ELSE best
-        END AS best
+    SELECT personId, eventId, RANK() OVER (PARTITION BY eventId ORDER BY best) AS rankNo, best
     FROM SeniorRanks AS sr2
     WHERE ageCategory = '40'
     AND resultType = 'single'
