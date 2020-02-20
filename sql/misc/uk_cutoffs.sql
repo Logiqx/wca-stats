@@ -8,23 +8,36 @@
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
+SET @countryId = 'United Kingdom';
+SET @continentId = '_Europe';
+
 /*
-    Determine UK cutoffs for current year
+    Determine cutoffs for current year
 */
 
 DROP TEMPORARY TABLE IF EXISTS cutoffs;
 
 CREATE TEMPORARY TABLE cutoffs AS
-SELECT year, event_id AS eventId, JSON_EXTRACT(cutoff, "$.attemptResult") AS csecs, COUNT(*) AS numComps
+SELECT countryId, year, event_id AS eventId, CAST(JSON_EXTRACT(cutoff, "$.attemptResult") AS DECIMAL(10,0)) AS csecs, COUNT(*) AS numComps
 FROM wca_dev.rounds AS r
 JOIN wca_dev.competition_events AS ce ON ce.id = competition_event_id
 JOIN wca_dev.Competitions AS c ON c.id = competition_id
 JOIN wca_dev.Formats AS f ON f.id = format_id
-WHERE countryId = 'United Kingdom'
-AND number = 1
+WHERE number = 1
 AND cutoff IS NOT NULL
 AND year = YEAR(CURDATE())
-GROUP BY event_id, year, csecs;
+GROUP BY countryId, event_id, year, csecs;
+
+ALTER TABLE cutoffs ADD INDEX cutoffs(countryId, eventId);
+
+/*
+    Summarise cutoffs for current year
+*/
+
+SELECT *
+FROM cutoffs
+WHERE numComps > 1
+ORDER BY eventId, csecs, countryId;
 
 /*
     Compare cutoffs to WR/CR/NR
@@ -45,7 +58,7 @@ JOIN
     FROM wca_dev.RanksAverage AS ra
     JOIN wca_dev.Persons AS p ON p.id = ra.personId
     JOIN wca_dev.Countries AS c ON c.id = p.countryId
-    WHERE c.continentId = '_Europe'
+    WHERE c.continentId = @continentId
     GROUP BY eventId
 ) AS t3 ON t3.eventId = c.eventId
 JOIN
@@ -53,10 +66,11 @@ JOIN
     SELECT eventId, MIN(best) AS nr
     FROM wca_dev.RanksAverage AS ra
     JOIN wca_dev.Persons AS p ON p.id = ra.personId
-    WHERE p.countryId = 'United Kingdom'
+    WHERE p.countryId = @countryId
     GROUP BY eventId
 ) AS t4 ON t4.eventId = c.eventId
 JOIN wca_dev.Events AS e ON e.id = c.eventId
+WHERE countryId = @countryId
 ORDER BY ratioWr DESC, e.rank;
 
 /*
@@ -86,7 +100,7 @@ JOIN
         FROM wca_dev.RanksAverage AS ra
         JOIN wca_dev.Persons AS p ON p.id = ra.personId
         JOIN wca_dev.Countries AS c ON c.id = p.countryId
-        WHERE c.continentId = '_Europe'
+        WHERE c.continentId = @continentId
     ) AS t
     WHERE vigintile = 1
     GROUP BY eventId
@@ -99,12 +113,13 @@ JOIN
         SELECT eventId, NTILE(20) OVER (PARTITION BY eventId ORDER BY best) AS vigintile, best
         FROM wca_dev.RanksAverage AS ra
         JOIN wca_dev.Persons AS p ON p.id = ra.personId
-        WHERE p.countryId = 'United Kingdom'
+        WHERE p.countryId = @countryId
     ) AS t
     WHERE vigintile = 1
     GROUP BY eventId
 ) AS t4 ON t4.eventId = c.eventId
 JOIN wca_dev.Events AS e ON e.id = c.eventId
+WHERE countryId = @countryId
 ORDER BY ratioWr DESC, e.rank;
 
 /*
@@ -127,6 +142,7 @@ JOIN
         SELECT eventId, CUME_DIST() OVER (PARTITION BY eventId ORDER BY best) AS centile, best
         FROM SeniorRanksCombined
     ) AS t ON t.eventId = c.eventId AND t.best < c.csecs
+    WHERE countryId = @countryId
     GROUP BY c.eventId
 ) AS t1 ON t1.eventId = c.eventId
 JOIN
@@ -138,7 +154,9 @@ JOIN
         SELECT eventId, CUME_DIST() OVER (PARTITION BY eventId ORDER BY best) AS centile, best
         FROM WcaRanksCombined
     ) AS t ON t.eventId = c.eventId AND t.best < c.csecs
+    WHERE countryId = @countryId
     GROUP BY c.eventId
 ) AS t2 ON t2.eventId = c.eventId
 JOIN wca_dev.Events AS e ON e.id = c.eventId
+WHERE countryId = @countryId
 ORDER BY seniorCentile DESC;
