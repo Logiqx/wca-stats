@@ -11,6 +11,7 @@
 SET @countryId = 'United Kingdom';
 SET @continentId = '_Europe';
 
+
 /*
     Determine cutoffs for current year
 */
@@ -38,6 +39,18 @@ SELECT *
 FROM cutoffs
 WHERE numComps > 1
 ORDER BY eventId, csecs, countryId;
+
+SELECT year, eventId, csecs, numComps,
+	SUM(numComps) OVER (PARTITION BY year, eventId ORDER BY csecs ROWS UNBOUNDED PRECEDING) AS cumComps,
+    ROUND(100 * SUM(numComps) OVER (PARTITION BY year, eventId ORDER BY csecs ROWS UNBOUNDED PRECEDING) / SUM(numComps) OVER (PARTITION BY year, eventId), 2) AS pctComps
+FROM
+(
+	SELECT year, eventId, csecs, SUM(numComps) AS numComps
+	FROM cutoffs
+	WHERE numComps > 1
+	GROUP BY eventId, csecs
+) AS t
+ORDER BY eventId, csecs;
 
 /*
     Compare cutoffs to WR/CR/NR
