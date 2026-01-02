@@ -8,19 +8,19 @@
 */
 
 -- Single step
-SELECT LEFT(personId, 4) AS regYear, COUNT(DISTINCT personId) AS numPersons
-FROM Results AS r
-JOIN Competitions AS c ON c.id = r.competitionId AND c.year = LEFT(personId, 4) AND c.month < 8
-GROUP BY regYear
-ORDER BY regYear;
+SELECT LEFT(person_id, 4) AS reg_year, COUNT(DISTINCT person_id) AS num_persons
+FROM results AS r
+JOIN competitions AS c ON c.id = r.competition_id AND c.year = LEFT(person_id, 4) AND c.month < 8
+GROUP BY reg_year
+ORDER BY reg_year;
 
 -- Multiple steps... should the query optimizer use a filesort on the whole results table during the above query
-CREATE TEMPORARY TABLE TinyResults AS
-SELECT DISTINCT personId, LEFT(personId, 4) AS regYear, competitionId
-FROM Results;
+CREATE TEMPORARY TABLE tiny_results AS
+SELECT DISTINCT person_id, LEFT(person_id, 4) AS reg_year, competition_id
+FROM results;
 
-SELECT regYear, COUNT(DISTINCT personId) AS numPersons
-FROM TinyResults AS r
-JOIN Competitions AS c ON c.id = r.competitionId AND c.year = regYear AND c.month < 8
-GROUP BY regYear
-ORDER BY regYear;
+SELECT reg_year, COUNT(DISTINCT person_id) AS num_persons
+FROM tiny_results AS r
+JOIN competitions AS c ON c.id = r.competition_id AND c.year = reg_year AND c.month < 8
+GROUP BY reg_year
+ORDER BY reg_year;

@@ -12,16 +12,16 @@
 SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(e.id != '333fm', ROUND(t.best / 100, 2), t.best)) AS result
 FROM
 (
-    SELECT s.*, RANK() OVER (PARTITION BY eventId ORDER BY best) AS rank
-    FROM RanksSingle AS s
+    SELECT s.*, RANK() OVER (PARTITION BY event_id ORDER BY best) AS rank
+    FROM ranks_single AS s
     WHERE NOT EXISTS
     (
         SELECT 1
-        FROM RanksAverage AS a
-        WHERE a.personId = s.personId AND a.eventId = s.eventId
+        FROM ranks_average AS a
+        WHERE a.person_id = s.person_id AND a.event_id = s.event_id
     )
 ) AS t
-JOIN Events AS e ON e.id = t.eventId
-JOIN Persons AS p ON p.id = t.personId
+JOIN events AS e ON e.id = t.event_id
+JOIN persons AS p ON p.id = t.person_id
 WHERE t.rank = 1
 ORDER BY e.rank;

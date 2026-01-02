@@ -27,61 +27,61 @@
     Identify winners at every competition
 */
 
-DROP TEMPORARY TABLE IF EXISTS Winners;
+DROP TEMPORARY TABLE IF EXISTS winners;
 
-CREATE TEMPORARY TABLE Winners AS
-SELECT competitionId, personId, DATE_FORMAT(CONCAT(c.year + IF(c.endMonth < c.month, 1, 0), '-', c.endMonth, '-', c.endDay), '%Y-%m-%d') AS endDate, best
-FROM Results AS r1
-JOIN RoundTypes AS rt ON rt.id = roundTypeId AND rt.final = 1
-JOIN Competitions AS c ON c.id = competitionId
-WHERE eventId = '333'
+CREATE TEMPORARY TABLE winners AS
+SELECT competition_id, person_id, DATE_FORMAT(CONCAT(c.year + IF(c.end_month < c.month, 1, 0), '-', c.end_month, '-', c.end_day), '%Y-%m-%d') AS end_date, best
+FROM results AS r1
+JOIN round_types AS rt ON rt.id = round_type_id AND rt.final = 1
+JOIN competitions AS c ON c.id = competition_id
+WHERE event_id = '333'
 AND best > 0
 AND pos = 1;
 
-ALTER TABLE Winners ADD INDEX Winners_personId_endDate (personId, endDate);
+ALTER TABLE winners ADD INDEX winners_person_id_end_date (person_id, end_date);
 
 /*
     Identify losers at every competition
 */
 
-DROP TEMPORARY TABLE IF EXISTS Losers;
+DROP TEMPORARY TABLE IF EXISTS losers;
 
-CREATE TEMPORARY TABLE Losers AS
-SELECT DISTINCT competitionId, personId, DATE_FORMAT(CONCAT(c.year + IF(c.endMonth < c.month, 1, 0), '-', c.endMonth, '-', c.endDay), '%Y-%m-%d') AS endDate
-FROM wca.Results AS r
-JOIN Competitions AS c ON c.id = competitionId
-WHERE eventId = '333'
+CREATE TEMPORARY TABLE losers AS
+SELECT DISTINCT competition_id, person_id, DATE_FORMAT(CONCAT(c.year + IF(c.end_month < c.month, 1, 0), '-', c.end_month, '-', c.end_day), '%Y-%m-%d') AS end_date
+FROM wca.results AS r
+JOIN competitions AS c ON c.id = competition_id
+WHERE event_id = '333'
 AND NOT EXISTS
 (
     SELECT 1
-    FROM Winners AS w
-    WHERE w.competitionId = r.competitionId
-    AND w.personId = r.personId
+    FROM winners AS w
+    WHERE w.competition_id = r.competition_id
+    AND w.person_id = r.person_id
 );
 
-ALTER TABLE Losers ADD INDEX Losers_personId_endDate (personId, endDate);
+ALTER TABLE losers ADD INDEX losers_person_id_end_date (person_id, end_date);
 
 /*
     The "world records" can only be set by people who haven't "quit"
 */
 
-SELECT c1.name AS compName, p.name AS personName, c2.name AS personCountry, ROUND(best / 100, 2) AS wr
-FROM Winners AS w1
-JOIN Persons AS p ON p.id = w1.personId
-JOIN Competitions AS c1 ON c1.id = w1.competitionId
-JOIN Countries AS c2 ON c2.id = c1.countryId
+SELECT c1.name AS comp_name, p.name AS person_name, c2.name AS person_country, ROUND(best / 100, 2) AS wr
+FROM winners AS w1
+JOIN persons AS p ON p.id = w1.person_id
+JOIN competitions AS c1 ON c1.id = w1.competition_id
+JOIN countries AS c2 ON c2.id = c1.country_id
 WHERE NOT EXISTS
 (
     SELECT 1
-    FROM Winners AS w2
-    WHERE w2.endDate <= w1.endDate
+    FROM winners AS w2
+    WHERE w2.end_date <= w1.end_date
     AND w2.best < w1.best
 )
 AND NOT EXISTS
 (
     SELECT 1
-    FROM Losers AS l
-    WHERE l.personId = w1.personId
-    AND l.endDate <= w1.endDate
+    FROM losers AS l
+    WHERE l.person_id = w1.person_id
+    AND l.end_date <= w1.end_date
 )
-ORDER BY endDate;
+ORDER BY end_date;

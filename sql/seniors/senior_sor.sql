@@ -14,124 +14,124 @@
     Note: This SQL can only be run against the senior rankings database - privately maintained by Michael George
 */
 
-DROP TEMPORARY TABLE IF EXISTS SeniorRanks;
+DROP TEMPORARY TABLE IF EXISTS senior_ranks;
 
-CREATE TEMPORARY TABLE SeniorRanks AS
-SELECT eventId, resultType, seq AS ageCategory, personId, hidden, MIN(best) AS best
+CREATE TEMPORARY TABLE senior_ranks AS
+SELECT event_id, result_type, seq AS age_category, person_id, hidden, MIN(best) AS best
 FROM
 (
-    SELECT r.eventId, 'average' AS resultType, r.personId, r.average AS best,
+    SELECT r.event_id, 'average' AS result_type, r.person_id, r.average AS best,
         TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp, hidden
-    FROM Seniors AS p
-    JOIN wca.Results AS r ON r.personId = p.personId AND average > 0
-    JOIN wca.Competitions AS c ON c.id = r.competitionId
+    FROM seniors AS p
+    JOIN wca.results AS r ON r.person_id = p.person_id AND average > 0
+    JOIN wca.competitions AS c ON c.id = r.competition_id
     WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
     HAVING age_at_comp >= 40
     UNION ALL
-    SELECT r.eventId, 'single' AS resultType, r.personId, r.best,
+    SELECT r.event_id, 'single' AS result_type, r.person_id, r.best,
         TIMESTAMPDIFF(YEAR, dob, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp, hidden
-    FROM Seniors AS p
-    JOIN wca.Results AS r ON r.personId = p.personId AND best > 0
-    JOIN wca.Competitions AS c ON c.id = r.competitionId
+    FROM seniors AS p
+    JOIN wca.results AS r ON r.person_id = p.person_id AND best > 0
+    JOIN wca.competitions AS c ON c.id = r.competition_id
     WHERE YEAR(dob) <= YEAR(CURDATE()) - 40
     HAVING age_at_comp >= 40
 ) AS t
 JOIN seq_40_to_100_step_10 ON seq <= age_at_comp
-GROUP BY eventId, resultType, ageCategory, personId;
+GROUP BY event_id, result_type, age_category, person_id;
 
-ALTER TABLE SeniorRanks ADD INDEX SeniorRanks(eventId, ageCategory, personId);
+ALTER TABLE senior_ranks ADD INDEX senior_ranks(event_id, age_category, person_id);
 
-SELECT seq, numSeniors
+SELECT seq, num_seniors
 FROM seq_1_to_6000 AS s
 LEFT JOIN
 (
-	SELECT floor(best / 100) AS modBest, COUNT(*) as numSeniors
-	FROM SeniorRanks
-	WHERE eventId = 'skewb'
-	AND resultType = 'average'
-	GROUP BY modBest
-) AS t ON modBest = seq;
+	SELECT floor(best / 100) AS mod_best, COUNT(*) as num_seniors
+	FROM senior_ranks
+	WHERE event_id = 'skewb'
+	AND result_type = 'average'
+	GROUP BY mod_best
+) AS t ON mod_best = seq;
 
 /*
     Combined rankings for seniors - average where it exists (except 4BLD and 5BLD), otherwise single
 */
 
-DROP TEMPORARY TABLE IF EXISTS SeniorRanksCombined;
+DROP TEMPORARY TABLE IF EXISTS senior_ranks_combined;
 
-CREATE TEMPORARY TABLE SeniorRanksCombined AS
+CREATE TEMPORARY TABLE senior_ranks_combined AS
 (
-    SELECT personId, eventId, RANK() OVER (PARTITION BY eventId ORDER BY best) AS rankNo, best, hidden
-    FROM SeniorRanks AS sr1
-    WHERE ageCategory = '40'
-    AND resultType = 'average'
+    SELECT person_id, event_id, RANK() OVER (PARTITION BY event_id ORDER BY best) AS rank_no, best, hidden
+    FROM senior_ranks AS sr1
+    WHERE age_category = '40'
+    AND result_type = 'average'
     -- AND hidden = 'n'
-    AND eventId NOT IN ('333fm', '333bf', '444bf', '555bf', '333mbf') -- use singles
-    AND eventId NOT IN ('333ft', 'magic', 'mmagic') -- legacy events
+    AND event_id NOT IN ('333fm', '333bf', '444bf', '555bf', '333mbf') -- use singles
+    AND event_id NOT IN ('333ft', 'magic', 'mmagic') -- legacy events
 )
 UNION ALL
 (
-    SELECT personId, eventId, RANK() OVER (PARTITION BY eventId ORDER BY best) AS rankNo, best, hidden
-    FROM SeniorRanks AS sr2
-    WHERE ageCategory = '40'
+    SELECT person_id, event_id, RANK() OVER (PARTITION BY event_id ORDER BY best) AS rank_no, best, hidden
+    FROM senior_ranks AS sr2
+    WHERE age_category = '40'
     -- AND hidden = 'n'
-    AND resultType = 'single'
-    AND eventId IN ('333fm', '333bf', '444bf', '555bf', '333mbf')
+    AND result_type = 'single'
+    AND event_id IN ('333fm', '333bf', '444bf', '555bf', '333mbf')
 );
 
-ALTER TABLE SeniorRanksCombined ADD INDEX (eventId);
+ALTER TABLE senior_ranks_combined ADD INDEX (event_id);
 
 /*
     Max Ranks
 */
 
-DROP TEMPORARY TABLE IF EXISTS MaxRanks;
+DROP TEMPORARY TABLE IF EXISTS max_ranks;
 
-CREATE TEMPORARY TABLE MaxRanks AS
-SELECT eventId, MAX(rankNo) AS maxRank, COUNT(*) AS numPersons
-FROM SeniorRanksCombined
-GROUP BY eventId;
+CREATE TEMPORARY TABLE max_ranks AS
+SELECT event_id, MAX(rank_no) AS max_rank, COUNT(*) AS num_persons
+FROM senior_ranks_combined
+GROUP BY event_id;
 
-ALTER TABLE MaxRanks ADD INDEX (eventId);
+ALTER TABLE max_ranks ADD INDEX (event_id);
 
-SELECT @sumRanks := SUM(maxRank) AS sumRanks FROM MaxRanks;
+SELECT @sum_ranks := SUM(max_rank) AS sum_ranks FROM max_ranks;
 
-DROP TEMPORARY TABLE IF EXISTS eventWeights;
+DROP TEMPORARY TABLE IF EXISTS event_weights;
 
-CREATE TEMPORARY TABLE eventWeights AS
+CREATE TEMPORARY TABLE event_weights AS
 (
-	SELECT eventId, 1.00000 * SUM(maxRank) / @sumRanks AS eventWeight
-	FROM MaxRanks
-	GROUP BY eventId
+	SELECT event_id, 1.00000 * SUM(max_rank) / @sum_ranks AS event_weight
+	FROM max_ranks
+	GROUP BY event_id
 );
 
-SELECT SUM(eventWeight)
-FROM eventWeights;
+SELECT SUM(event_weight)
+FROM event_weights;
 
 /*
     The calculations
 */
 
-SELECT sr.eventId, personId, hidden,
-	(maxRank + 1 - rankNo) / @sumRanks * 10 AS score,
-    maxRank / @sumRanks AS ew,
-    (maxRank - rankNo + 1) / maxRank * 100 AS up,
-    (maxRank - rankNo + 1) / maxRank * 100 * maxRank / (@sumRanks * 100) AS wp
-FROM SeniorRanksCombined AS sr
-JOIN MaxRanks AS mr ON mr.eventId = sr.eventId;
+SELECT sr.event_id, person_id, hidden,
+	(max_rank + 1 - rank_no) / @sum_ranks * 10 AS score,
+    max_rank / @sum_ranks AS ew,
+    (max_rank - rank_no + 1) / max_rank * 100 AS up,
+    (max_rank - rank_no + 1) / max_rank * 100 * max_rank / (@sum_ranks * 100) AS wp
+FROM senior_ranks_combined AS sr
+JOIN max_ranks AS mr ON mr.event_id = sr.event_id;
 
-SELECT t.*, p.name, p.countryId
+SELECT t.*, p.name, p.country_id
 FROM
 (
-	SELECT RANK() OVER (ORDER BY score DESC) as rankNo, t.*
+	SELECT RANK() OVER (ORDER BY score DESC) as rank_no, t.*
 	FROM
 	(
-		SELECT personId, hidden, SUM(1.0000 * (maxRank + 1 - rankNo) / @sumRanks * 10) AS score,
-			SUM((maxRank - rankNo + 1) / maxRank * 100 * maxRank / (@sumRanks * 100)) AS score2
-		FROM SeniorRanksCombined AS sr
-		JOIN MaxRanks AS mr ON mr.eventId = sr.eventId
-		GROUP BY personId
+		SELECT person_id, hidden, SUM(1.0000 * (max_rank + 1 - rank_no) / @sum_ranks * 10) AS score,
+			SUM((max_rank - rank_no + 1) / max_rank * 100 * max_rank / (@sum_ranks * 100)) AS score2
+		FROM senior_ranks_combined AS sr
+		JOIN max_ranks AS mr ON mr.event_id = sr.event_id
+		GROUP BY person_id
 	) AS t
-	ORDER BY rankNo
+	ORDER BY rank_no
 ) AS t
-JOIN wca.Persons AS p ON p.id = t.personId
+JOIN wca.persons AS p ON p.id = t.person_id
 WHERE hidden = 'n';

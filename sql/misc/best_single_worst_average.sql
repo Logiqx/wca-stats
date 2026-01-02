@@ -11,50 +11,50 @@
     Create combined ranks table
 */
 
-DROP TEMPORARY TABLE IF EXISTS RanksCombined;
+DROP TEMPORARY TABLE IF EXISTS ranks_combined;
 
-CREATE TEMPORARY TABLE RanksCombined AS
-SELECT s.personId, s.eventId, s.best AS pr_single, a.best AS pr_average
-FROM RanksSingle AS s
-JOIN RanksAverage AS a ON a.personId = s.personId AND a.eventId = s.eventId;
+CREATE TEMPORARY TABLE ranks_combined AS
+SELECT s.person_id, s.event_id, s.best AS pr_single, a.best AS pr_average
+FROM ranks_single AS s
+JOIN ranks_average AS a ON a.person_id = s.person_id AND a.event_id = s.event_id;
 
-ALTER TABLE RanksCombined ADD UNIQUE INDEX RanksCombined_eventId_personId (eventId, personId);
+ALTER TABLE ranks_combined ADD UNIQUE INDEX ranks_combined_event_id_person_id (event_id, person_id);
 
 /*
     List PR singles where there is nobody with a faster single / slower average
 */
 
-SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(eventId != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
-FROM RanksCombined AS c1
-JOIN Events AS e ON e.id = c1.eventId
-JOIN Persons AS p ON p.id = c1.personId
+SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(event_id != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
+FROM ranks_combined AS c1
+JOIN events AS e ON e.id = c1.event_id
+JOIN persons AS p ON p.id = c1.person_id
 WHERE NOT EXISTS
 (
     SELECT 1
-    FROM RanksCombined AS c2
-    WHERE c2.eventId = c1.eventId
+    FROM ranks_combined AS c2
+    WHERE c2.event_id = c1.event_id
     AND c2.pr_single <= c1.pr_single
     AND c2.pr_average > c1.pr_average
 )
-ORDER BY eventId, pr_single;
+ORDER BY event_id, pr_single;
 
 /*
     List PR average where there is nobody with a faster average / slower single
 */
 
-SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(eventId != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
-FROM RanksCombined AS c1
-JOIN Events AS e ON e.id = c1.eventId
-JOIN Persons AS p ON p.id = c1.personId
+SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(event_id != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
+FROM ranks_combined AS c1
+JOIN events AS e ON e.id = c1.event_id
+JOIN persons AS p ON p.id = c1.person_id
 WHERE NOT EXISTS
 (
     SELECT 1
-    FROM RanksCombined AS c2
-    WHERE c2.eventId = c1.eventId
+    FROM ranks_combined AS c2
+    WHERE c2.event_id = c1.event_id
     AND c2.pr_average <= c1.pr_average
     AND c2.pr_single > c1.pr_single
 )
-ORDER BY eventId, pr_single;
+ORDER BY event_id, pr_single;
 
 /*
     Experimental query using CTE
@@ -62,18 +62,18 @@ ORDER BY eventId, pr_single;
 
 WITH cte AS
 (
-    SELECT s.eventId, s.personId, s.best AS pr_single, a.best AS pr_average
-    FROM RanksSingle AS s
-    JOIN RanksAverage AS a ON a.eventId = s.eventId AND a.personId = s.personId
+    SELECT s.event_id, s.person_id, s.best AS pr_single, a.best AS pr_average
+    FROM ranks_single AS s
+    JOIN ranks_average AS a ON a.event_id = s.event_id AND a.person_id = s.person_id
 )
-SELECT eventId, personId, IF(eventId != '333fm', ROUND(pr_single / 100, 2), pr_single) AS pr_single, ROUND(pr_average / 100, 2) AS pr_average
+SELECT event_id, person_id, IF(event_id != '333fm', ROUND(pr_single / 100, 2), pr_single) AS pr_single, ROUND(pr_average / 100, 2) AS pr_average
 FROM cte AS c1
 WHERE NOT EXISTS
 (
     SELECT 1
     FROM cte AS c2
-    WHERE c2.eventId = c1.eventId
+    WHERE c2.event_id = c1.event_id
     AND c2.pr_single <= c1.pr_single
     AND c2.pr_average > c1.pr_average
 )
-ORDER BY eventId, pr_single;
+ORDER BY event_id, pr_single;

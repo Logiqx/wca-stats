@@ -8,11 +8,11 @@
 
 -- Note: Hacked 3BLD because only 60% of people who have attempted it have a success
 
-SELECT runDate, e.name AS eventName, ROUND(100 * SUM(groupSize) / 2000 / IF(eventId = '333bf', 0.6, 1), 2) AS pctSeniors
-FROM wca_ipy.SeniorStats AS ss
-JOIN wca.Events AS e ON e.id = ss.eventId
-WHERE resultType = 'single'
-AND ageCategory = 40
-AND eventId NOT IN ('333ft', 'mmagic', 'magic', '333mbo')
-GROUP BY runDate, eventId
-ORDER BY pctSeniors DESC;
+SELECT run_date, e.name AS event_name, ROUND(100 * SUM(group_size) / 2000 / IF(event_id = '333bf', 0.6, 1), 2) AS pct_seniors
+FROM wca_ipy.senior_stats AS ss
+JOIN wca.events AS e ON e.id = ss.event_id
+WHERE result_type = 'single'
+AND age_category = 40
+AND event_id NOT IN ('333ft', 'mmagic', 'magic', '333mbo')
+GROUP BY run_date, event_id
+ORDER BY pct_seniors DESC;

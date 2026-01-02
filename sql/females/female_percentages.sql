@@ -21,10 +21,10 @@ FROM
         SUM(CASE WHEN p.gender IN ('m', 'f') THEN 1 ELSE 0 END) AS num_persons
     FROM
     (
-        SELECT DISTINCT personId
-        FROM Results
+        SELECT DISTINCT person_id
+        FROM results
     ) AS tmp_results
-    INNER JOIN Persons AS p ON tmp_results.personId = p.id AND p.subid = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
 ) AS tmp;
 
 -- Females per competition - 8.60%
@@ -32,17 +32,17 @@ FROM
 SELECT CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
 (
-    SELECT tmp_results.competitionId,
+    SELECT tmp_results.competition_id,
         SUM(CASE WHEN p.gender = 'm' THEN 1 ELSE 0 END) AS num_males,
         SUM(CASE WHEN p.gender = 'f' THEN 1 ELSE 0 END) AS num_females,
         SUM(CASE WHEN p.gender IN ('m', 'f') THEN 1 ELSE 0 END) AS num_persons
     FROM
     (
-        SELECT DISTINCT competitionId, personId
-        FROM Results
+        SELECT DISTINCT competition_id, person_id
+        FROM results
     ) AS tmp_results
-    INNER JOIN Persons AS p ON tmp_results.personId = p.id AND p.subid = 1
-    GROUP BY tmp_results.competitionId
+    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    GROUP BY tmp_results.competition_id
 ) AS c;
 
 -- Results in pct_female_by_country.csv
@@ -50,20 +50,20 @@ FROM
 SELECT c.name AS country, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
 (
-    SELECT tmp_results.competitionId, c.countryId, c.year,
+    SELECT tmp_results.competition_id, c.country_id, c.year,
         SUM(CASE WHEN p.gender = 'm' THEN 1 ELSE 0 END) AS num_males,
         SUM(CASE WHEN p.gender = 'f' THEN 1 ELSE 0 END) AS num_females,
         SUM(CASE WHEN p.gender IN ('m', 'f') THEN 1 ELSE 0 END) AS num_persons
     FROM
     (
-        SELECT DISTINCT competitionId, personId
-        FROM Results
+        SELECT DISTINCT competition_id, person_id
+        FROM results
     ) AS tmp_results
-    INNER JOIN Competitions AS c ON tmp_results.competitionId = c.id
-    INNER JOIN Persons AS p ON tmp_results.personId = p.id AND p.subid = 1
-    GROUP BY tmp_results.competitionId
+    INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
+    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    GROUP BY tmp_results.competition_id
 ) AS tmp_comps
-INNER JOIN Countries AS c ON tmp_comps.countryId = c.id
+INNER JOIN countries AS c ON tmp_comps.country_id = c.id
 GROUP BY country;
 
 -- Results in pct_female_by_year.csv
@@ -71,18 +71,18 @@ GROUP BY country;
 SELECT year, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
 (
-    SELECT tmp_results.competitionId, c.countryId, c.year,
+    SELECT tmp_results.competition_id, c.country_id, c.year,
         SUM(CASE WHEN p.gender = 'm' THEN 1 ELSE 0 END) AS num_males,
         SUM(CASE WHEN p.gender = 'f' THEN 1 ELSE 0 END) AS num_females,
         SUM(CASE WHEN p.gender IN ('m', 'f') THEN 1 ELSE 0 END) AS num_persons
     FROM
     (
-        SELECT DISTINCT competitionId, personId
-        FROM Results
+        SELECT DISTINCT competition_id, person_id
+        FROM results
     ) AS tmp_results
-    INNER JOIN Competitions AS c ON tmp_results.competitionId = c.id
-    INNER JOIN Persons AS p ON tmp_results.personId = p.id AND p.subid = 1
-    GROUP BY tmp_results.competitionId
+    INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
+    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    GROUP BY tmp_results.competition_id
 ) AS tmp_comps
 GROUP BY year;
 
@@ -91,18 +91,18 @@ GROUP BY year;
 SELECT c.name AS country, year, CAST(AVG(100.0 * num_females / num_persons) AS DECIMAL(10,2)) AS pct_females
 FROM
 (
-    SELECT tmp_results.competitionId, c.countryId, c.year,
+    SELECT tmp_results.competition_id, c.country_id, c.year,
         SUM(CASE WHEN p.gender = 'm' THEN 1 ELSE 0 END) AS num_males,
         SUM(CASE WHEN p.gender = 'f' THEN 1 ELSE 0 END) AS num_females,
         SUM(CASE WHEN p.gender IN ('m', 'f') THEN 1 ELSE 0 END) AS num_persons
     FROM
     (
-        SELECT DISTINCT competitionId, personId
-        FROM Results
+        SELECT DISTINCT competition_id, person_id
+        FROM results
     ) AS tmp_results
-    INNER JOIN Competitions AS c ON tmp_results.competitionId = c.id
-    INNER JOIN Persons AS p ON tmp_results.personId = p.id AND p.subid = 1
-    GROUP BY tmp_results.competitionId
+    INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
+    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    GROUP BY tmp_results.competition_id
 ) AS tmp_comps
-INNER JOIN Countries AS c ON tmp_comps.countryId = c.id
+INNER JOIN countries AS c ON tmp_comps.country_id = c.id
 GROUP BY country, year;

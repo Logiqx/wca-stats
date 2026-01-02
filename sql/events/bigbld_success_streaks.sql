@@ -10,19 +10,19 @@
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
-SELECT e.name AS event, t.rank, p.id, p.name, c.name AS country, longestStreak
+SELECT e.name AS event, t.rank, p.id, p.name, c.name AS country, longest_streak
 FROM
 (
-    SELECT eventId, personId, MAX(streakLen) AS longestStreak, RANK() OVER (PARTITION BY eventId ORDER BY MAX(streakLen) DESC) AS rank
+    SELECT event_id, person_id, MAX(streak_len) AS longest_streak, RANK() OVER (PARTITION BY event_id ORDER BY MAX(streak_len) DESC) AS rank
     FROM
     (
-        SELECT t.*, SUM(IF(result < 0, 0, 1)) OVER (PARTITION BY eventId, personId, streakNo) AS streakLen
+        SELECT t.*, SUM(IF(result < 0, 0, 1)) OVER (PARTITION BY event_id, person_id, streak_no) AS streak_len
         FROM
         (
-            SELECT t.*, SUM(IF(result < 0, 1, 0)) OVER (PARTITION BY eventId, personId ORDER BY start_date, competitionId, roundNo, attempt ROWS UNBOUNDED PRECEDING) AS streakNo
+            SELECT t.*, SUM(IF(result < 0, 1, 0)) OVER (PARTITION BY event_id, person_id ORDER BY start_date, competition_id, round_no, attempt ROWS UNBOUNDED PRECEDING) AS streak_no
             FROM
             (
-                SELECT eventId, personId, competitionId, rt.rank AS roundNo, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') AS start_date, seq AS attempt,
+                SELECT event_id, person_id, competition_id, rt.rank AS round_no, DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') AS start_date, seq AS attempt,
                     CASE
                         WHEN seq = 1 THEN value1
                         WHEN seq = 2 THEN value2
@@ -30,19 +30,19 @@ FROM
                         WHEN seq = 4 THEN value4
                         WHEN seq = 5 THEN value5
                     END AS result
-                FROM Results AS r
+                FROM results AS r
                 JOIN (SELECT 1 AS seq UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5) AS seq_1_to_5
-                JOIN Competitions AS c ON c.id = r.competitionId
-                JOIN RoundTypes AS rt ON rt.id = r.roundTypeId
-                WHERE eventId IN ('444bf', '555bf')
+                JOIN competitions AS c ON c.id = r.competition_id
+                JOIN round_types AS rt ON rt.id = r.round_type_id
+                WHERE event_id IN ('444bf', '555bf')
                 HAVING result NOT IN (0, -2)
             ) AS t
         ) AS t
     ) AS t
-    GROUP BY eventId, personId
+    GROUP BY event_id, person_id
 ) AS t
-JOIN Events AS e ON e.id = t.eventId
-JOIN Persons AS p ON p.id = t.personId AND p.subid = 1
-JOIN Countries AS c ON c.id = p.countryId
+JOIN events AS e ON e.id = t.event_id
+JOIN persons AS p ON p.id = t.person_id AND p.sub_id = 1
+JOIN countries AS c ON c.id = p.country_id
 WHERE t.rank <= 20
 ORDER BY e.rank, t.rank, p.id;

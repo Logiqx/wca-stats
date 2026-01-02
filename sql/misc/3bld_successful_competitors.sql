@@ -6,12 +6,12 @@
     Purpose:  Determine what percentage of competitors have a success (~60%)
 */
 
-SELECT @attempt := COUNT(DISTINCT personId)
-FROM wca.RanksSingle
-WHERE eventId = '333bf';
+SELECT @attempt := COUNT(DISTINCT person_id)
+FROM wca.ranks_single
+WHERE event_id = '333bf';
 
-SELECT @success := COUNT(DISTINCT personId)
-FROM wca.Results
-WHERE eventId = '333bf';
+SELECT @success := COUNT(DISTINCT person_id)
+FROM wca.results
+WHERE event_id = '333bf';
 
 SELECT 100 * @attempt / @success

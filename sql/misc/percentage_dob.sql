@@ -6,14 +6,14 @@
     Purpose:  Report what percentage of profiles have a DOB
 */
 
-SELECT countryId, 100 * SUM(IF(year > 0, 1, 0)) / COUNT(*) AS pctDob
-FROM Persons
-WHERE subid = 1
-GROUP BY countryId
-ORDER BY countryId;
+SELECT country_id, 100 * SUM(IF(year > 0, 1, 0)) / COUNT(*) AS pct_dob
+FROM persons
+WHERE sub_id = 1
+GROUP BY country_id
+ORDER BY country_id;
 
-SELECT LEFT(id, 4) AS regYear, 100 * SUM(IF(year > 0, 1, 0)) / COUNT(*) AS pctDob
-FROM Persons
-WHERE subid = 1
-GROUP BY regYear
-ORDER BY regYear;
+SELECT LEFT(id, 4) AS reg_year, 100 * SUM(IF(year > 0, 1, 0)) / COUNT(*) AS pct_dob
+FROM persons
+WHERE sub_id = 1
+GROUP BY reg_year
+ORDER BY reg_year;

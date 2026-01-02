@@ -8,30 +8,30 @@
 
 SET @cutoff = '2014-02-01';
 
-SELECT DATE(@cutoff) AS cutoffDate, eventId, resultType, ageCategory, COUNT(*) AS numSeniors
+SELECT DATE(@cutoff) AS cutoff_date, event_id, result_type, age_category, COUNT(*) AS num_seniors
 FROM
 (
-    SELECT eventId, 'single' AS resultType, personId,
+    SELECT event_id, 'single' AS result_type, person_id,
         MAX(FLOOR(TIMESTAMPDIFF(YEAR,
             DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
-            DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS ageCategory
-    FROM wca.Results AS r
-    INNER JOIN wca.Competitions AS c ON r.competitionId = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
-    INNER JOIN wca.Persons AS p ON r.personId = p.id AND p.subid = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
+            DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS age_category
+    FROM wca.results AS r
+    INNER JOIN wca.competitions AS c ON r.competition_id = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
+    INNER JOIN wca.persons AS p ON r.person_id = p.id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
     WHERE best > 0
-    GROUP BY eventId, personId
-    HAVING ageCategory >= 40
+    GROUP BY event_id, person_id
+    HAVING age_category >= 40
     UNION ALL
-    SELECT eventId, 'average' AS resultType, personId,
+    SELECT event_id, 'average' AS result_type, person_id,
         MAX(FLOOR(TIMESTAMPDIFF(YEAR,
             DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
-            DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS ageCategory
-    FROM wca.Results AS r
-    INNER JOIN wca.Competitions AS c ON r.competitionId = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
-    INNER JOIN wca.Persons AS p ON r.personId = p.id AND p.subid = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
+            DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS age_category
+    FROM wca.results AS r
+    INNER JOIN wca.competitions AS c ON r.competition_id = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
+    INNER JOIN wca.persons AS p ON r.person_id = p.id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
     WHERE average > 0
-    GROUP BY eventId, personId
-    HAVING ageCategory >= 40
+    GROUP BY event_id, person_id
+    HAVING age_category >= 40
 ) AS tmp_persons
-GROUP BY eventId, resultType, ageCategory
-ORDER BY eventId, resultType, ageCategory;
+GROUP BY event_id, result_type, age_category
+ORDER BY event_id, result_type, age_category;

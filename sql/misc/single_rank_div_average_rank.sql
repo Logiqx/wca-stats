@@ -9,18 +9,18 @@
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
-SELECT CONCAT(e.name, ' - ', t.rank, ' - ', p.name, ' - ', rankSingle, '/', rankAverage, ' (',
-    IF(e.id != '333fm', ROUND(bestSingle / 100, 2), bestSingle), ' single, ', ROUND(bestAverage / 100, 2), ' average)') AS result
+SELECT CONCAT(e.name, ' - ', t.rank, ' - ', p.name, ' - ', rank_single, '/', rank_average, ' (',
+    IF(e.id != '333fm', ROUND(best_single / 100, 2), best_single), ' single, ', ROUND(best_average / 100, 2), ' average)') AS result
 FROM
 (
-    SELECT s.personId, s.eventId,
-        s.worldRank AS rankSingle, a.worldRank AS rankAverage,
-        s.best AS bestSingle, a.best AS bestAverage,
-        RANK() OVER (PARTITION BY eventId ORDER BY s.worldRank / a.worldRank DESC) AS rank
-    FROM RanksSingle AS s
-    JOIN RanksAverage AS a ON a.personId = s.personId AND a.eventId = s.eventId
+    SELECT s.person_id, s.event_id,
+        s.world_rank AS rank_single, a.world_rank AS rank_average,
+        s.best AS best_single, a.best AS best_average,
+        RANK() OVER (PARTITION BY event_id ORDER BY s.world_rank / a.world_rank DESC) AS rank
+    FROM ranks_single AS s
+    JOIN ranks_average AS a ON a.person_id = s.person_id AND a.event_id = s.event_id
 ) AS t
-JOIN Events AS e ON e.id = t.eventId
-JOIN Persons AS p ON p.id = t.personId
+JOIN events AS e ON e.id = t.event_id
+JOIN persons AS p ON p.id = t.person_id
 WHERE t.rank <= 10
 ORDER BY e.rank, t.rank;

@@ -8,8 +8,8 @@
 */
 
 SELECT LPAD(MOD(best, 100), 2, 0) AS mod100, COUNT(*) AS num_results, IF(best % 25 IN (1, 4, 7, 10, 12, 14, 17, 20, 23, 24), '*', '') AS gen2_issue
-FROM Results
+FROM results
 WHERE best BETWEEN 1 AND 59999
-AND eventId NOT IN ('333fm', '333mbf', '333mbo')
+AND event_id NOT IN ('333fm', '333mbf', '333mbo')
 GROUP BY mod100
 ORDER BY num_results DESC;

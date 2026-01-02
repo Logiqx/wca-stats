@@ -22,7 +22,7 @@
     missed        = MM
     solved        = difference + missed
     attempted     = solved + missed
-    timeInSeconds = TTTTT
+    time_in_seconds = TTTTT
 */
 
 SET @target = 7;
@@ -44,8 +44,8 @@ FROM
             best % 100 AS missed,
             99 - FLOOR(best / 10000000) AS points,
             COUNT(*) AS num_results
-        FROM Results
-        WHERE eventId = '333mbf'
+        FROM results
+        WHERE event_id = '333mbf'
         AND best > 0
         GROUP BY attempted, solved
     ) t1

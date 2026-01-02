@@ -16,24 +16,24 @@
     missed        = MM
     solved        = difference + missed
     attempted     = solved + missed
-    timeInSeconds = TTTTT
+    time_in_seconds = TTTTT
 */
 
 SELECT (CASE WHEN best > 0 THEN 99 - FLOOR(best / 10000000) + (best % 100) * 2 ELSE NULL END) AS attempted, COUNT(*)
-FROM Results r
-WHERE eventId = '333mbf'
+FROM results r
+WHERE event_id = '333mbf'
 GROUP BY attempted
 ORDER BY attempted;
 
 SELECT attempted, COUNT(*)
 FROM
 (
-    SELECT personId, MIN(CASE WHEN best > 0 THEN 99 - FLOOR(best / 10000000) + (best % 100) * 2 ELSE NULL END) AS attempted
-    FROM Results r
-    WHERE eventId = '333mbf'
-    GROUP BY personId
+    SELECT person_id, MIN(CASE WHEN best > 0 THEN 99 - FLOOR(best / 10000000) + (best % 100) * 2 ELSE NULL END) AS attempted
+    FROM results r
+    WHERE event_id = '333mbf'
+    GROUP BY person_id
     HAVING attempted IS NOT NULL
-    ORDER BY personId
+    ORDER BY person_id
 ) AS t
 GROUP BY attempted
 ORDER BY attempted;
@@ -56,7 +56,7 @@ SELECT attempted,
     -- FORMAT(AVG(ABS(attempted - last_preceding)) / AVG(ABS(attempted - next_following)),3) AS abs_ratio
 FROM 
 (
-    -- SELECT personId, `year`, `month`, `day`, attempted, last_preceding, max_preceding, next_following, min_following,
+    -- SELECT person_id, `year`, `month`, `day`, attempted, last_preceding, max_preceding, next_following, min_following,
     SELECT attempted, last_preceding, max_preceding, next_following, min_following,
     (
         ROUND(CASE
@@ -73,34 +73,34 @@ FROM
     ) AS estimated
     FROM
     (
-        SELECT personId, `year`, `month`, `day`, attempted,
+        SELECT person_id, `year`, `month`, `day`, attempted,
             LAG(attempted) OVER (
-                PARTITION BY personId
+                PARTITION BY person_id
                 ORDER BY `year`, `month`, `day`
                 ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS last_preceding,
             MAX(attempted) OVER (
-                PARTITION BY personId
+                PARTITION BY person_id
                 ORDER BY `year`, `month`, `day`
                 ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS max_preceding,
             LEAD(attempted) OVER (
-                PARTITION BY personId
+                PARTITION BY person_id
                 ORDER BY `year`, `month`, `day`
                 ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING) AS next_following,
             MIN(attempted) OVER (
-                PARTITION BY personId
+                PARTITION BY person_id
                 ORDER BY `year`, `month`, `day`
                 ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING) AS min_following
         FROM
         (
             -- Successful MultiBLD attempts
-            SELECT personId, c.year, c.month, c.day,
+            SELECT person_id, c.year, c.month, c.day,
                 (CASE WHEN best > 0 THEN 99 - FLOOR(best / 10000000) + (best % 100) * 2 ELSE NULL END) AS attempted
-            FROM Results r
-            INNER JOIN Competitions AS c ON r.competitionId = c.id
-            WHERE eventId = '333mbf'
+            FROM results r
+            INNER JOIN competitions AS c ON r.competition_id = c.id
+            WHERE event_id = '333mbf'
             AND    best > 0
-            -- AND personId = '2004GALL02'
-            -- ORDER BY personId, c.year, c.month, c.day
+            -- AND person_id = '2004GALL02'
+            -- ORDER BY person_id, c.year, c.month, c.day
         ) t1
         -- WHERE attempted = 48
     ) t2
@@ -110,7 +110,7 @@ WHERE attempted >= 1
 -- AND last_preceding != attempted
 GROUP BY attempted
 ORDER BY attempted
--- ORDER BY personId, `year`, `month`, `day`
+-- ORDER BY person_id, `year`, `month`, `day`
 ;
 
 SELECT
@@ -132,7 +132,7 @@ SELECT
 ) AS estimated, COUNT(*)
 FROM
 (
-    SELECT personId, `year`, `month`, `day`,
+    SELECT person_id, `year`, `month`, `day`,
         attempted, asc_partition, desc_partition,
         FIRST_VALUE(attempted) OVER wp AS last_preceding,
         MAX(attempted) OVER wp AS max_preceding,
@@ -140,23 +140,23 @@ FROM
         MIN(attempted) OVER wf AS min_following
     FROM
     (
-        SELECT personId, c.year, c.month, c.day,
+        SELECT person_id, c.year, c.month, c.day,
             (CASE WHEN best > 0 THEN 99 - FLOOR(best / 10000000) + (best % 100) * 2 ELSE NULL END) AS attempted,
             SUM(CASE WHEN best > 0 THEN 1 ELSE 0 END) OVER
-                (PARTITION BY personId ORDER BY c.year, c.month, c.day) as asc_partition,
+                (PARTITION BY person_id ORDER BY c.year, c.month, c.day) as asc_partition,
             SUM(CASE WHEN best > 0 THEN 1 ELSE 0 END) OVER
-                (PARTITION BY personId ORDER BY c.year DESC, c.month DESC, c.day DESC) as desc_partition
-        FROM Results r
-        INNER JOIN Competitions AS c ON r.competitionId = c.id
-        WHERE eventId = '333mbf'
-        ORDER BY personId, c.year, c.month, c.day
+                (PARTITION BY person_id ORDER BY c.year DESC, c.month DESC, c.day DESC) as desc_partition
+        FROM results r
+        INNER JOIN competitions AS c ON r.competition_id = c.id
+        WHERE event_id = '333mbf'
+        ORDER BY person_id, c.year, c.month, c.day
     ) t1
-    WINDOW w AS (PARTITION BY personId ORDER BY `year`, `month`, `day`),
+    WINDOW w AS (PARTITION BY person_id ORDER BY `year`, `month`, `day`),
         wp AS (w ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING),
         wf AS (w ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING)
 ) t2
 WHERE attempted IS NULL
 GROUP BY estimated
 ORDER BY estimated
--- ORDER BY personId, `year`, `month`, `day`;
+-- ORDER BY person_id, `year`, `month`, `day`;
 ;
