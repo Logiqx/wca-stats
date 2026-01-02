@@ -69,7 +69,7 @@ JOIN
 (
     SELECT event_id, MIN(best) AS cr
     FROM wca_dev.ranks_average AS ra
-    JOIN wca_dev.persons AS p ON p.id = ra.person_id
+    JOIN wca_dev.persons AS p ON p.wca_id = ra.person_id
     JOIN wca_dev.countries AS c ON c.id = p.country_id
     WHERE c.continent_id = @continent_id
     GROUP BY event_id
@@ -78,7 +78,7 @@ JOIN
 (
     SELECT event_id, MIN(best) AS nr
     FROM wca_dev.ranks_average AS ra
-    JOIN wca_dev.persons AS p ON p.id = ra.person_id
+    JOIN wca_dev.persons AS p ON p.wca_id = ra.person_id
     WHERE p.country_id = @country_id
     GROUP BY event_id
 ) AS t4 ON t4.event_id = c.event_id
@@ -111,7 +111,7 @@ JOIN
     (
         SELECT event_id, NTILE(20) OVER (PARTITION BY event_id ORDER BY best) AS vigintile, best
         FROM wca_dev.ranks_average AS ra
-        JOIN wca_dev.persons AS p ON p.id = ra.person_id
+        JOIN wca_dev.persons AS p ON p.wca_id = ra.person_id
         JOIN wca_dev.countries AS c ON c.id = p.country_id
         WHERE c.continent_id = @continent_id
     ) AS t
@@ -125,7 +125,7 @@ JOIN
     (
         SELECT event_id, NTILE(20) OVER (PARTITION BY event_id ORDER BY best) AS vigintile, best
         FROM wca_dev.ranks_average AS ra
-        JOIN wca_dev.persons AS p ON p.id = ra.person_id
+        JOIN wca_dev.persons AS p ON p.wca_id = ra.person_id
         WHERE p.country_id = @country_id
     ) AS t
     WHERE vigintile = 1

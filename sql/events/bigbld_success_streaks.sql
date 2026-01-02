@@ -10,7 +10,7 @@
     Notes:    Requires MySQL 8.0.2 (2017-07-17) or MariaDB 10.2.0 (2016-04-19) or newer for window functions
 */
 
-SELECT e.name AS event, t.rank, p.id, p.name, c.name AS country, longest_streak
+SELECT e.name AS event, t.rank, p.wca_id, p.name, c.name AS country, longest_streak
 FROM
 (
     SELECT event_id, person_id, MAX(streak_len) AS longest_streak, RANK() OVER (PARTITION BY event_id ORDER BY MAX(streak_len) DESC) AS rank
@@ -42,7 +42,7 @@ FROM
     GROUP BY event_id, person_id
 ) AS t
 JOIN events AS e ON e.id = t.event_id
-JOIN persons AS p ON p.id = t.person_id AND p.sub_id = 1
+JOIN persons AS p ON p.wca_id = t.person_id AND p.sub_id = 1
 JOIN countries AS c ON c.id = p.country_id
 WHERE t.rank <= 20
-ORDER BY e.rank, t.rank, p.id;
+ORDER BY e.rank, t.rank, p.wca_id;

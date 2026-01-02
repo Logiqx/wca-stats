@@ -7,7 +7,7 @@
     Link:     https://www.facebook.com/groups/439995439706174/permalink/935796790126034/
 */
 
-SELECT p.id, p.name, p.country_id, comp_name, comp_date, round, pos, best
+SELECT p.wca_id, p.name, p.country_id, comp_name, comp_date, round, pos, best
 FROM
 (
     SELECT person_id, MIN(DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS first_comp
@@ -22,5 +22,5 @@ JOIN (
     JOIN round_types AS rt ON rt.id = r.round_type_id
     WHERE event_id = '444bf' AND best > 0
 ) AS t2 ON t2.person_id = t1.person_id AND t2.comp_date = t1.first_comp
-JOIN persons AS p ON p.id = t2.person_id
+JOIN persons AS p ON p.wca_id = t2.person_id
 ORDER BY comp_date;

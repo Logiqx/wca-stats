@@ -15,7 +15,7 @@ FROM
         DATE_FORMAT(CONCAT(p.year, '-', p.month, '-', p.day), '%Y-%m-%d'),
         DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) AS age_at_comp
     FROM wca.persons AS p
-    JOIN wca.results AS r ON r.person_id = p.id AND best > 0
+    JOIN wca.results AS r ON r.person_id = p.wca_id AND best > 0
     JOIN wca.competitions AS c ON c.id = r.competition_id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') < @cutoff
     WHERE p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
     AND p.sub_id = 1

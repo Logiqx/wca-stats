@@ -21,6 +21,6 @@ FROM
     JOIN ranks_average AS a ON a.person_id = s.person_id AND a.event_id = s.event_id
 ) AS t
 JOIN events AS e ON e.id = t.event_id
-JOIN persons AS p ON p.id = t.person_id
+JOIN persons AS p ON p.wca_id = t.person_id
 WHERE t.rank <= 10
 ORDER BY e.rank, t.rank;

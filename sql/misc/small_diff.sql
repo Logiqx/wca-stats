@@ -10,7 +10,7 @@
 SELECT p.name as person_name, e.name AS event_name, ROUND(rs.best / 100, 2) AS pr_single, ROUND(ra.best / 100, 2) AS pr_average, ROUND(ra.best / 100, 2) - ROUND(rs.best / 100, 2) AS diff
 FROM ranks_single AS rs
 JOIN ranks_average AS ra ON ra.person_id = rs.person_id AND ra.event_id = rs.event_id
-JOIN persons AS p ON p.id = rs.person_id
+JOIN persons AS p ON p.wca_id = rs.person_id
 JOIN events AS e ON e.id = rs.event_id
 ORDER BY diff
 LIMIT 50;

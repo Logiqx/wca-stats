@@ -27,7 +27,7 @@ ALTER TABLE ranks_combined ADD UNIQUE INDEX ranks_combined_event_id_person_id (e
 SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(event_id != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
 FROM ranks_combined AS c1
 JOIN events AS e ON e.id = c1.event_id
-JOIN persons AS p ON p.id = c1.person_id
+JOIN persons AS p ON p.wca_id = c1.person_id
 WHERE NOT EXISTS
 (
     SELECT 1
@@ -45,7 +45,7 @@ ORDER BY event_id, pr_single;
 SELECT CONCAT(e.name, ' - ', p.name, ' - ', IF(event_id != '333fm', ROUND(pr_single / 100, 2), pr_single), ' - ', ROUND(pr_average / 100, 2)) AS result
 FROM ranks_combined AS c1
 JOIN events AS e ON e.id = c1.event_id
-JOIN persons AS p ON p.id = c1.person_id
+JOIN persons AS p ON p.wca_id = c1.person_id
 WHERE NOT EXISTS
 (
     SELECT 1

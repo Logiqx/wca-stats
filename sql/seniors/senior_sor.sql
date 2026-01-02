@@ -133,5 +133,5 @@ FROM
 	) AS t
 	ORDER BY rank_no
 ) AS t
-JOIN wca.persons AS p ON p.id = t.person_id
+JOIN wca.persons AS p ON p.wca_id = t.person_id
 WHERE hidden = 'n';

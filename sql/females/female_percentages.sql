@@ -24,7 +24,7 @@ FROM
         SELECT DISTINCT person_id
         FROM results
     ) AS tmp_results
-    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.wca_id AND p.sub_id = 1
 ) AS tmp;
 
 -- Females per competition - 8.60%
@@ -41,7 +41,7 @@ FROM
         SELECT DISTINCT competition_id, person_id
         FROM results
     ) AS tmp_results
-    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.wca_id AND p.sub_id = 1
     GROUP BY tmp_results.competition_id
 ) AS c;
 
@@ -60,7 +60,7 @@ FROM
         FROM results
     ) AS tmp_results
     INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
-    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.wca_id AND p.sub_id = 1
     GROUP BY tmp_results.competition_id
 ) AS tmp_comps
 INNER JOIN countries AS c ON tmp_comps.country_id = c.id
@@ -81,7 +81,7 @@ FROM
         FROM results
     ) AS tmp_results
     INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
-    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.wca_id AND p.sub_id = 1
     GROUP BY tmp_results.competition_id
 ) AS tmp_comps
 GROUP BY year;
@@ -101,7 +101,7 @@ FROM
         FROM results
     ) AS tmp_results
     INNER JOIN competitions AS c ON tmp_results.competition_id = c.id
-    INNER JOIN persons AS p ON tmp_results.person_id = p.id AND p.sub_id = 1
+    INNER JOIN persons AS p ON tmp_results.person_id = p.wca_id AND p.sub_id = 1
     GROUP BY tmp_results.competition_id
 ) AS tmp_comps
 INNER JOIN countries AS c ON tmp_comps.country_id = c.id

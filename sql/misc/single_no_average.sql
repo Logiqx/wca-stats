@@ -22,6 +22,6 @@ FROM
     )
 ) AS t
 JOIN events AS e ON e.id = t.event_id
-JOIN persons AS p ON p.id = t.person_id
+JOIN persons AS p ON p.wca_id = t.person_id
 WHERE t.rank = 1
 ORDER BY e.rank;

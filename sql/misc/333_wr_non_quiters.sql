@@ -67,7 +67,7 @@ ALTER TABLE losers ADD INDEX losers_person_id_end_date (person_id, end_date);
 
 SELECT c1.name AS comp_name, p.name AS person_name, c2.name AS person_country, ROUND(best / 100, 2) AS wr
 FROM winners AS w1
-JOIN persons AS p ON p.id = w1.person_id
+JOIN persons AS p ON p.wca_id = w1.person_id
 JOIN competitions AS c1 ON c1.id = w1.competition_id
 JOIN countries AS c2 ON c2.id = c1.country_id
 WHERE NOT EXISTS

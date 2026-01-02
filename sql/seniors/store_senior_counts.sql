@@ -17,7 +17,7 @@ FROM
             DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS age_category
     FROM wca.results AS r
     INNER JOIN wca.competitions AS c ON r.competition_id = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
-    INNER JOIN wca.persons AS p ON r.person_id = p.id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
+    INNER JOIN wca.persons AS p ON r.person_id = p.wca_id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
     WHERE best > 0
     GROUP BY event_id, person_id
     HAVING age_category >= 40
@@ -28,7 +28,7 @@ FROM
             DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d')) / 10) * 10) AS age_category
     FROM wca.results AS r
     INNER JOIN wca.competitions AS c ON r.competition_id = c.id AND DATE_FORMAT(CONCAT(c.year, '-', c.month, '-', c.day), '%Y-%m-%d') <= @cutoff
-    INNER JOIN wca.persons AS p ON r.person_id = p.id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
+    INNER JOIN wca.persons AS p ON r.person_id = p.wca_id AND p.sub_id = 1 AND p.year > 0 AND p.year <= YEAR(CURDATE()) - 40
     WHERE average > 0
     GROUP BY event_id, person_id
     HAVING age_category >= 40
